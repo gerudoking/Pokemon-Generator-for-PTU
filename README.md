@@ -10,7 +10,7 @@ Is important to note the project is still under development, but the planned fea
 * Support for all pokemons
 
 ## Download Link:
-* [Windows](https://1drv.ms/u/s!Avk3qQZwR1p2hrsUM3GFj_ZYYE1-Kw)
-* [Ubuntu](https://1drv.ms/u/s!Avk3qQZwR1p2hrsVVKmsdE1vFl1dtA)
+* [Windows](https://onedrive.live.com/download?cid=765A477006A937F9&resid=765A477006A937F9%21105876&authkey=ACIODP2jnOZSbnM)
+* [Ubuntu](https://onedrive.live.com/download?cid=765A477006A937F9&resid=765A477006A937F9%21105877&authkey=ACgThB2rQxdU4bw)
 
 Hope you enjoy the program, and if you want to help, you are very welcome to contribute!
