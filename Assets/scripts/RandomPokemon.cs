@@ -12,6 +12,14 @@ public class RandomPokemon : MonoBehaviour
     private Text pokemonInfo;
     [SerializeField]
     private string pokemonPath;
+    [SerializeField]
+    private InputField pokemonName;
+    [SerializeField]
+    private InputField pokemonLevel;
+    [SerializeField]
+    private Dropdown positiveNatureDropdown;
+    [SerializeField]
+    private Dropdown negativeNatureDropdown;
 
     private string[] pokemonFiles;
 
@@ -27,19 +35,38 @@ public class RandomPokemon : MonoBehaviour
 
     }
 
-    public void GetRandomPokemon(){
+    public void GetRandomPokemon(bool bias){
         int rand = UnityEngine.Random.Range(0, pokemonFiles.Length);
 
-        pokemonInfo.text = GetPokemonText(rand);
+        if(bias){
+            for(int i = 0; i < pokemonFiles.Length; i++){
+                if((pokemonName.text.ToLower()) + ".txt" == Path.GetFileName(pokemonFiles[i])){
+                    rand = i;
+                    break;
+                }
+            }
+        }
+
+        pokemonInfo.text = GetPokemonText(rand, !bias);
     }
 
-    public int[] GeneratePokemonStats(int number, int level){
+    //Applies leveling up stats upgrades, always respecting the base relations rule.
+    //If the nature is set to random or the pokemon is totally random, it's nature is set here.
+    public int[] GeneratePokemonStats(int number, int level, ref int posNat, ref int negNat){
         int[] stats = new int[6];
         string allText = System.IO.File.ReadAllText(pokemonFiles[number]);
         string[] fields = allText.Split(';');
 
-        int positiveStats = UnityEngine.Random.Range(0,6);
-        int negativeStats = UnityEngine.Random.Range(0,6);
+        int positiveStats;
+        int negativeStats;
+        if(posNat == 6)
+            positiveStats = UnityEngine.Random.Range(0,6);
+        else
+            positiveStats = posNat;
+        if(negNat == 6)
+            negativeStats = UnityEngine.Random.Range(0,6);
+        else
+            negativeStats = negNat;
         int unspentStats = level + 10;
 
         stats[0] = Int32.Parse(fields[1]);
@@ -76,6 +103,9 @@ public class RandomPokemon : MonoBehaviour
             unspentStats--;
         }
 
+        posNat = positiveStats;
+        negNat = negativeStats;
+
         return stats;
     }
 
@@ -87,22 +117,73 @@ public class RandomPokemon : MonoBehaviour
         return false;
     }
 
-    public string GetPokemonText(int number){
+    //Here the text for the UI text component is generated, as well as handling the
+    //pokemon level randomization(if set to true)
+    public string GetPokemonText(int number, bool isLevelRandom){
         string formated = null;
         string allText = System.IO.File.ReadAllText(pokemonFiles[number]);
         string[] fields = allText.Split(';');
 
-        int randomLevel = UnityEngine.Random.Range(1,101);
-        int[] stats = GeneratePokemonStats(number, randomLevel);
+        int randomLevel;
+        if(isLevelRandom || pokemonLevel.text == "")
+            randomLevel = UnityEngine.Random.Range(1,101);
+        else{
+            if(Int32.Parse(pokemonLevel.text) < 1){
+                randomLevel = 1;
+            }
+            else if(Int32.Parse(pokemonLevel.text) > 100){
+                randomLevel = 100;
+            }
+            else{
+                randomLevel = Int32.Parse(pokemonLevel.text);
+            }
+        }
+
+        int posNat;
+        int negNat;
+        if(isLevelRandom){
+            posNat = 6;
+            negNat = 6;
+        }
+        else{
+            posNat = positiveNatureDropdown.value;
+            negNat = negativeNatureDropdown.value;
+        }
+
+        int[] stats = GeneratePokemonStats(number, randomLevel, ref posNat, ref negNat);
 
         formated += "Name: " + fields[0] + "\n\n";
         formated += "Level: " + randomLevel + "\n";
         formated += "\nHP: " + stats[0];
+        if(posNat == 0)
+            formated += "(UP)";
+        if(negNat == 0)
+            formated += "(DOWN)";
         formated += "\nAttack: " + stats[1];
+        if(posNat == 1)
+            formated += "(UP)";
+        if(negNat == 1)
+            formated += "(DOWN)";
         formated += "\nDefense: " + stats[2];
+        if(posNat == 2)
+            formated += "(UP)";
+        if(negNat == 2)
+            formated += "(DOWN)";
         formated += "\nSpecial Attack: " + stats[3];
+        if(posNat == 3)
+            formated += "(UP)";
+        if(negNat == 3)
+            formated += "(DOWN)";
         formated += "\nSpecial Defense: " + stats[4];
+        if(posNat == 4)
+            formated += "(UP)";
+        if(negNat == 4)
+            formated += "(DOWN)";
         formated += "\nSpeed: " + stats[5];
+        if(posNat == 5)
+            formated += "(UP)";
+        if(negNat == 5)
+            formated += "(DOWN)";
         formated += "\n\nBasic Information:\n";
         formated += "Type: " + fields[7] + "/" + fields[8] + "\n";
 
